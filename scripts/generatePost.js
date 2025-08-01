@@ -42,7 +42,7 @@ async function generatePost(messages) {
 Tu es un expert marketing. Voici une liste de commits faits cette semaine sur un projet SaaS appelé "${PROJECT_NAME}". 
 Ton objectif est de générer un post LinkedIn engageant, clair, humain, en français, qui met en avant les nouveautés ajoutées.
 
-⚠️ Important : Ne donne pas de détails sur l'implémentation technique. Si un commit concerne uniquement du refactoring, des corrections internes, ou des optimisations techniques, ne l’évoque pas.
+⚠️ Important : Ne donne pas de détails sur l'implémentation technique (ex: "refactoring", "correction", "optimisation"), et ne parle pas de "swagger". Si un commit concerne uniquement du refactoring, des corrections internes, ou des optimisations techniques, ne l’évoque pas.
 
 Commits :
 ${messages.map(m => `- ${m}`).join('\n')}

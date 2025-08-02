@@ -31,10 +31,32 @@ npm install -g linkedin-poster
 
 ### As a Library
 
+#### Simple Usage (Recommended)
+
+```typescript
+import { generatePost, generateAndPost, isLinkedInConfigured } from 'linkedin-poster';
+
+// Check if LinkedIn is configured
+if (isLinkedInConfigured()) {
+  console.log('LinkedIn is ready for posting');
+}
+
+// Generate a post from recent commits
+const result = await generatePost();
+
+// Generate and post to LinkedIn
+const postedResult = await generateAndPost({
+  autoPost: true,
+  visibility: 'PUBLIC'
+});
+```
+
+#### Advanced Usage (Full Control)
+
 ```typescript
 import { LinkedInPosterService } from 'linkedin-poster';
 
-// Create a poster instance
+// Create a poster instance with custom options
 const poster = new LinkedInPosterService({
   verbose: true
 });
@@ -84,6 +106,33 @@ const post = await openAIService.generatePost({
 
 // Post to LinkedIn
 const result = await linkedInService.postToLinkedIn(post);
+```
+
+### Utility Functions
+
+For simple use cases, you can use the utility functions:
+
+```typescript
+import { 
+  generatePost,           // Generate post from commits
+  generateAndPost,        // Generate and post to LinkedIn
+  isLinkedInConfigured,   // Check LinkedIn configuration
+  createPoster           // Create custom poster instance
+} from 'linkedin-poster';
+
+// Quick post generation
+const result = await generatePost();
+
+// Quick post and publish
+const posted = await generateAndPost({ autoPost: true });
+
+// Check configuration
+if (isLinkedInConfigured()) {
+  // Ready to post
+}
+
+// Create custom instance
+const poster = createPoster({ verbose: true });
 ```
 
 ### As a CLI Tool

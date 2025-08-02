@@ -7,26 +7,36 @@ This project uses GitHub Actions to automate testing and publishing.
 ### 1. Test and Validate (`test.yml`)
 
 **Triggers:**
-- Push to `main` or `develop`
+- Push to `main`
 - Pull Request to `main`
 
 **Actions:**
 - Tests on Node.js 16, 18, and 20
 - Linting and type checking
 - Build validation
-- **Independent workflow** - runs separately
+- **Main workflow** - runs on all pushes and PRs
 
 ### 2. Publish to NPM (`publish.yml`)
 
 **Triggers:**
-- Push to `main`
+- **After** successful completion of "Test and Validate" workflow on `main` branch
+
+**Actions:**
+- **Only runs if tests pass** (depends on test workflow)
+- Builds project
+- Publishes to npm
+- **No duplicate testing** - relies on test workflow results
+
+### 3. Create Release (`release.yml`)
+
+**Triggers:**
 - Creation of `v*` tags (e.g., `v1.0.0`)
 
 **Actions:**
-- **Runs tests first** (linting, type checking, build)
+- **Runs tests first** (linting, type checking, build on all Node versions)
 - **Only publishes if tests pass**
 - Publishes to npm
-- Creates GitHub release (if tag)
+- Creates GitHub release
 
 ## 🔧 Configuration
 

@@ -1,14 +1,23 @@
 {
   "name": "linkedin-poster",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "type": "module",
   "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "dev:generate": "tsx src/index.ts generate",
+    "dev:post": "tsx src/index.ts post",
+    "dev:setup": "tsx src/index.ts setup",
+    "dev:config": "tsx src/index.ts config",
+    "dev:help": "tsx src/index.ts help",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "generate": "node src/index.js generate",
-    "post": "node src/index.js post",
-    "setup": "node src/index.js setup",
-    "config": "node src/index.js config",
-    "help": "node src/index.js help"
+    "generate": "npm run build && node dist/index.js generate",
+    "post": "npm run build && node dist/index.js post",
+    "setup": "npm run build && node dist/index.js setup",
+    "config": "npm run build && node dist/index.js config",
+    "help": "npm run build && node dist/index.js help"
   },
   "keywords": [],
   "author": "",
@@ -19,5 +28,9 @@
     "node-fetch": "^3.3.2",
     "openai": "^5.11.0"
   },
-  "type": "module"
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
 }

@@ -1,40 +1,51 @@
+import { LoggerOptions } from '../types/index.js';
+
+interface Stats {
+  totalTokens: number;
+  model: string;
+  estimatedCost: number;
+}
+
 export class Logger {
-  constructor(options = {}) {
+  private verbose: boolean;
+  private silent: boolean;
+
+  constructor(options: LoggerOptions = {}) {
     this.verbose = options.verbose || false;
     this.silent = options.silent || false;
   }
 
-  info(message) {
+  info(message: string): void {
     if (!this.silent) {
       console.log(`ℹ️  ${message}`);
     }
   }
 
-  success(message) {
+  success(message: string): void {
     if (!this.silent) {
       console.log(`✅ ${message}`);
     }
   }
 
-  warning(message) {
+  warning(message: string): void {
     if (!this.silent) {
       console.log(`⚠️  ${message}`);
     }
   }
 
-  error(message) {
+  error(message: string): void {
     if (!this.silent) {
       console.error(`❌ ${message}`);
     }
   }
 
-  debug(message) {
+  debug(message: string): void {
     if (this.verbose && !this.silent) {
       console.log(`🐛 ${message}`);
     }
   }
 
-  section(title) {
+  section(title: string): void {
     if (!this.silent) {
       console.log(`\n${'='.repeat(50)}`);
       console.log(`📋 ${title}`);
@@ -42,7 +53,7 @@ export class Logger {
     }
   }
 
-  postPreview(content) {
+  postPreview(content: string): void {
     if (!this.silent) {
       console.log('\n📣 Post LinkedIn généré :\n');
       console.log(content);
@@ -50,7 +61,7 @@ export class Logger {
     }
   }
 
-  stats(stats) {
+  stats(stats: Stats): void {
     if (!this.silent) {
       console.log('\n📊 Stats :');
       console.log(`- Tokens utilisés : ${stats.totalTokens}`);
@@ -59,17 +70,17 @@ export class Logger {
     }
   }
 
-  progress(step, total, message) {
+  progress(step: number, total: number, message: string): void {
     if (!this.silent) {
       console.log(`[${step}/${total}] ${message}`);
     }
   }
 
-  setVerbose(verbose) {
+  setVerbose(verbose: boolean): void {
     this.verbose = verbose;
   }
 
-  setSilent(silent) {
+  setSilent(silent: boolean): void {
     this.silent = silent;
   }
 } 

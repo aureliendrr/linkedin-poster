@@ -2,6 +2,7 @@
 
 import { LinkedInPosterService } from './services/LinkedInPosterService.js';
 import { ConfigManager } from './utils/ConfigManager.js';
+import { LinkedInPosterOptions } from './types/index.js';
 import readline from 'readline';
 
 const rl = readline.createInterface({
@@ -9,30 +10,30 @@ const rl = readline.createInterface({
   output: process.stdout
 });
 
-function question(prompt) {
+function question(prompt: string): Promise<string> {
   return new Promise((resolve) => {
     rl.question(prompt, resolve);
   });
 }
 
-async function executeCommand(commandFn, options = {}) {
+async function executeCommand(commandFn: (options: LinkedInPosterOptions) => Promise<void>, options: LinkedInPosterOptions = {}): Promise<void> {
   try {
     await commandFn(options);
   } catch (error) {
-    console.error('❌ Error:', error.message);
+    console.error('❌ Error:', (error as Error).message);
     process.exit(1);
   } finally {
-    if (rl && !rl.closed) {
+    if (rl) {
       rl.close();
     }
   }
 }
 
-function showHelp() {
+function showHelp(): void {
   console.log(`
 🚀 LinkedIn Poster - AI-powered LinkedIn post generator
 
-Usage: node src/index.js [command] [options]
+Usage: node dist/index.js [command] [options]
 
 Commands:
   generate, g     Generate a LinkedIn post from recent commits (no posting)
@@ -49,18 +50,18 @@ Options:
 
 
 Examples:
-  node src/index.js generate
-  node src/index.js post --private
-  node src/index.js setup
-  node src/index.js config
+  npm run generate
+  npm run post -- --private
+  npm run setup
+  npm run config
 
 Environment Variables:
   Make sure you have a .env file with the required configuration.
-  Run 'node src/index.js setup' to configure LinkedIn API access.
+  Run 'npm run setup' to configure LinkedIn API access.
 `);
 }
 
-async function handleGenerateCommand(options) {
+async function handleGenerateCommand(options: LinkedInPosterOptions): Promise<void> {
   const poster = new LinkedInPosterService(options);
   const result = await poster.generatePost();
   if (!result) {
@@ -68,19 +69,19 @@ async function handleGenerateCommand(options) {
   }
 }
 
-async function handlePostCommand(options) {
+async function handlePostCommand(options: LinkedInPosterOptions): Promise<void> {
   const poster = new LinkedInPosterService(options);
   
   // Check if LinkedIn is configured
   if (!poster.isLinkedInConfigured()) {
-    console.error('❌ LinkedIn credentials not configured. Please run: node src/index.js setup');
+    console.error('❌ LinkedIn credentials not configured. Please run: npm run setup');
     process.exit(1);
   }
 
   const postOptions = {
     autoPost: !process.argv.includes('--no-auto-post'),
     requireConfirmation: process.argv.includes('--no-auto-post'),
-    visibility: process.argv.includes('--private') ? 'CONNECTIONS' : 'PUBLIC'
+    visibility: process.argv.includes('--private') ? 'CONNECTIONS' as const : 'PUBLIC' as const
   };
 
   const result = await poster.generateAndPost(postOptions);
@@ -90,7 +91,7 @@ async function handlePostCommand(options) {
   }
 }
 
-async function handleSetupCommand() {
+async function handleSetupCommand(): Promise<void> {
   console.log('🔗 LinkedIn API Setup Guide\n');
   console.log('This will help you set up LinkedIn API access for direct posting.\n');
 
@@ -125,7 +126,7 @@ async function handleSetupCommand() {
   console.log('4. Note your Person ID (it\'s a numeric value)\n');
 
   const personId = await question('Enter your LinkedIn Person ID: ');
-  if (!personId || isNaN(personId)) {
+  if (!personId || isNaN(Number(personId))) {
     console.log('❌ Invalid Person ID. Please enter a numeric value.');
     rl.close();
     return;
@@ -175,16 +176,16 @@ LINKEDIN_PERSON_ID=${personId}`;
     console.log('\n✅ LinkedIn setup completed!');
     console.log('Your credentials have been added to your .env file.');
     console.log('\n🚀 You can now use:');
-    console.log('node src/index.js post');
+    console.log('npm run post');
     
   } catch (error) {
-    console.error('❌ Error updating .env file:', error.message);
+    console.error('❌ Error updating .env file:', (error as Error).message);
   }
 
   rl.close();
 }
 
-async function handleConfigCommand() {
+async function handleConfigCommand(): Promise<void> {
   console.log('⚙️  Configuration Setup\n');
   
   const config = new ConfigManager();
@@ -198,19 +199,19 @@ async function handleConfigCommand() {
   console.log('5. Customize GitHub settings (branch, exclude patterns)');
 }
 
-async function main() {
+async function main(): Promise<void> {
   const args = process.argv.slice(2);
   
-  if (args.length === 0 || args.includes('help') || args.includes('h')) {
-    showHelp();
-    if (rl && !rl.closed) {
-      rl.close();
+      if (args.length === 0 || args.includes('help') || args.includes('h')) {
+      showHelp();
+      if (rl) {
+        rl.close();
+      }
+      return;
     }
-    return;
-  }
 
   const command = args[0];
-  const options = {
+  const options: LinkedInPosterOptions = {
     verbose: args.includes('--verbose'),
     silent: args.includes('--silent')
   };
@@ -243,10 +244,10 @@ async function main() {
         process.exit(1);
     }
   } catch (error) {
-    console.error('❌ Unexpected error:', error.message);
+    console.error('❌ Unexpected error:', (error as Error).message);
     process.exit(1);
   } finally {
-    if (rl && !rl.closed) {
+    if (rl) {
       rl.close();
     }
   }

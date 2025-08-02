@@ -11,6 +11,7 @@ Automatically generate and post LinkedIn updates based on your GitHub commits us
 - 💰 Cost tracking for OpenAI usage
 - 🏗️ Clean, modular architecture with separation of concerns
 - 🔧 Easy to extend and customize
+- 📝 Written in TypeScript with full type safety
 
 ## Setup
 
@@ -20,7 +21,13 @@ Automatically generate and post LinkedIn updates based on your GitHub commits us
 npm install
 ```
 
-### 2. Environment Variables
+### 2. Build the Project
+
+```bash
+npm run build
+```
+
+### 3. Environment Variables
 
 Create a `.env` file in the root directory with sensitive information:
 
@@ -38,7 +45,7 @@ LINKEDIN_ACCESS_TOKEN=your_linkedin_access_token
 LINKEDIN_PERSON_ID=your_linkedin_person_id
 ```
 
-### 3. Configuration File
+### 4. Configuration File
 
 Create a custom configuration file for non-sensitive settings:
 
@@ -164,7 +171,7 @@ The `github` section allows you to customize how commits are fetched and filtere
 ```
 In this last example, the post will be displayed in console and saved to file, but NOT posted to LinkedIn because `linkedin.enabled` is `false`.
 
-### 3. LinkedIn API Setup
+### 5. LinkedIn API Setup
 
 To post directly to LinkedIn, you need to set up LinkedIn API access:
 
@@ -186,7 +193,7 @@ To post directly to LinkedIn, you need to set up LinkedIn API access:
 3. Use the OAuth 2.0 flow to get an access token
 4. The token should have `w_member_social` scope
 
-### 4. GitHub Token Setup
+### 6. GitHub Token Setup
 1. Go to GitHub Settings → Developer settings → Personal access tokens
 2. Generate a new token with `repo` scope
 3. Add it to your `.env` file
@@ -198,7 +205,9 @@ To post directly to LinkedIn, you need to set up LinkedIn API access:
 All functionality is now available through a single entry point:
 
 ```bash
-node src/index.js [command] [options]
+npm run [command] [options]
+# or
+node dist/index.js [command] [options]
 ```
 
 ### Commands
@@ -209,9 +218,9 @@ node src/index.js [command] [options]
 npm run generate
 
 # Direct command
-node src/index.js generate
+npm run generate
 # or
-node src/index.js g
+node dist/index.js generate
 ```
 
 #### Generate and Post to LinkedIn
@@ -220,9 +229,9 @@ node src/index.js g
 npm run post
 
 # Direct command
-node src/index.js post
+npm run post
 # or
-node src/index.js p
+node dist/index.js post
 ```
 
 #### Setup LinkedIn API
@@ -231,9 +240,9 @@ node src/index.js p
 npm run setup
 
 # Direct command
-node src/index.js setup
+npm run setup
 # or
-node src/index.js s
+node dist/index.js setup
 ```
 
 #### Create Configuration File
@@ -242,9 +251,9 @@ node src/index.js s
 npm run config
 
 # Direct command
-node src/index.js config
+npm run config
 # or
-node src/index.js cfg
+node dist/index.js config
 ```
 
 #### Show Help
@@ -253,27 +262,27 @@ node src/index.js cfg
 npm run help
 
 # Direct command
-node src/index.js help
+npm run help
 # or
-node src/index.js h
+node dist/index.js help
 ```
 
 ### Advanced Options
 
 ```bash
 # Generate with verbose logging
-node src/index.js generate --verbose
+npm run generate -- --verbose
 
 # Post with private visibility
-node src/index.js post --private
+npm run post -- --private
 
 # Post without auto-confirmation
-node src/index.js post --no-auto-post
+npm run post -- --no-auto-post
 
 
 
 # Silent mode (disable all output)
-node src/index.js generate --silent
+npm run generate -- --silent
 ```
 
 ### Available Commands
@@ -303,24 +312,22 @@ The project follows a clean, modular architecture with clear separation of conce
 
 ```
 src/
-├── index.js                   # Single entry point for all commands
+├── index.ts                   # Single entry point for all commands
+├── types/
+│   └── index.ts              # TypeScript type definitions
 ├── services/
-│   ├── LinkedInPosterService.js # Main service that orchestrates all others
-│   ├── GitHubService.js       # GitHub API interactions
-│   ├── OpenAIService.js       # OpenAI API interactions
-│   └── LinkedInService.js     # LinkedIn API interactions
+│   ├── LinkedInPosterService.ts # Main service that orchestrates all others
+│   ├── GitHubService.ts       # GitHub API interactions
+│   ├── OpenAIService.ts       # OpenAI API interactions
+│   ├── LinkedInService.ts     # LinkedIn API interactions
+│   └── OutputService.ts       # Multiple output handling
 └── utils/
-    ├── ConfigManager.js       # Configuration management
-    ├── Logger.js              # Logging utilities
-    └── TemplateManager.js     # Template management
-services/
-├── LinkedInPosterService.js # Main service that orchestrates all others
-├── GitHubService.js       # GitHub API interactions
-├── OpenAIService.js       # OpenAI API interactions
-├── LinkedInService.js     # LinkedIn API interactions
-└── OutputService.js       # Multiple output handling
+    ├── ConfigManager.ts       # Configuration management
+    ├── Logger.ts              # Logging utilities
+    └── TemplateManager.ts     # Template management
 templates/
 └── linkedin-post.xml         # LinkedIn post generation template (XML format)
+dist/                         # Compiled JavaScript output
 ```
 
 ## How It Works
@@ -405,8 +412,8 @@ You can modify the template file to change the prompt structure and instructions
 
 You can also use the `LinkedInPoster` class programmatically:
 
-```javascript
-import { LinkedInPosterService } from './src/services/LinkedInPosterService.js';
+```typescript
+import { LinkedInPosterService } from './dist/services/LinkedInPosterService.js';
 
 const poster = new LinkedInPosterService({
   verbose: true
@@ -420,11 +427,7 @@ const postedResult = await poster.generateAndPost({
   autoPost: true,
   visibility: 'PUBLIC'
 });
-
-
 ```
-
-See `examples/usage.js` for more detailed examples.
 
 ## Cost Estimation
 
@@ -452,6 +455,47 @@ The script tracks OpenAI usage and estimates costs:
 - Never commit your `.env` file to version control
 - Keep your API tokens secure
 - LinkedIn access tokens expire - you may need to refresh them periodically
+
+## Development
+
+### Development Mode
+
+For development, you can use the TypeScript source directly without building:
+
+```bash
+# Install development dependencies
+npm install
+
+# Run in development mode (no build required)
+npm run dev:generate
+npm run dev:post
+npm run dev:setup
+npm run dev:config
+npm run dev:help
+
+# Or use the generic dev command
+npm run dev generate
+npm run dev post
+```
+
+### Building for Production
+
+```bash
+# Build the project
+npm run build
+
+# Run the built version
+npm start
+```
+
+### TypeScript Configuration
+
+The project uses strict TypeScript configuration with:
+- Strict type checking
+- No implicit any
+- Strict null checks
+- Exact optional property types
+- Source maps for debugging
 
 ## License
 

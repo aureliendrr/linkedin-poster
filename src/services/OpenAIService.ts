@@ -1,8 +1,36 @@
 import { OpenAI } from 'openai';
 import { TemplateManager } from '../utils/TemplateManager.js';
+import { Commit, PostGenerationResult, TemplateVariables } from '../types/index.js';
+
+interface OpenAIServiceOptions {
+  model?: string;
+  language?: 'english' | 'french';
+  tone?: string;
+  maxTokens?: number;
+  temperature?: number;
+}
+
+interface PostConfig {
+  language?: 'english' | 'french';
+  tone?: string;
+  maxLength?: number;
+  includeHashtags?: boolean;
+  hashtags?: string[];
+  callToAction?: boolean;
+  includeEmojis?: boolean;
+}
 
 export class OpenAIService {
-  constructor(options = {}) {
+  private openai: OpenAI;
+  private model: string;
+  private language: 'english' | 'french';
+  private tone: string;
+  private maxTokens: number;
+  private temperature: number;
+  private costPer1kTokens: number;
+  private templateManager: TemplateManager;
+
+  constructor(options: OpenAIServiceOptions = {}) {
     // Get API key directly from environment for security
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
@@ -19,7 +47,7 @@ export class OpenAIService {
     this.templateManager = new TemplateManager();
   }
 
-  async generatePost(commits, projectName, projectUrl, postConfig = {}) {
+  async generatePost(commits: Commit[], projectName: string, projectUrl: string, postConfig: PostConfig = {}): Promise<PostGenerationResult> {
     const prompt = this.buildPrompt(commits, projectName, projectUrl, postConfig);
 
     const response = await this.openai.chat.completions.create({
@@ -29,8 +57,8 @@ export class OpenAIService {
       temperature: this.temperature,
     });
 
-    const post = response.choices[0].message.content;
-    const totalTokens = response.usage.total_tokens;
+    const post = response.choices[0]?.message?.content || '';
+    const totalTokens = response.usage?.total_tokens || 0;
     const estimatedCost = this.calculateCost(totalTokens);
 
     return {
@@ -41,14 +69,14 @@ export class OpenAIService {
     };
   }
 
-  buildPrompt(commits, projectName, projectUrl, postConfig = {}) {
+  private buildPrompt(commits: Commit[], projectName: string, projectUrl: string, postConfig: PostConfig = {}): string {
     const language = this.language === 'french' ? 'français' : 'english';
     const includeHashtags = postConfig.includeHashtags !== false;
     const hashtags = postConfig.hashtags || ['#tech', '#development'];
     const callToAction = postConfig.callToAction !== false;
     const includeEmojis = postConfig.includeEmojis !== false;
 
-    const variables = {
+    const variables: TemplateVariables = {
       PROJECT_NAME: projectName,
       LANGUAGE: language,
       TONE: this.tone,
@@ -63,15 +91,15 @@ export class OpenAIService {
     return this.templateManager.renderTemplate('linkedin-post', variables);
   }
 
-  calculateCost(totalTokens) {
+  private calculateCost(totalTokens: number): number {
     return (totalTokens / 1000) * this.costPer1kTokens;
   }
 
-  setModel(model) {
+  setModel(model: string): void {
     this.model = model;
   }
 
-  setCostPer1kTokens(cost) {
+  setCostPer1kTokens(cost: number): void {
     this.costPer1kTokens = cost;
   }
 } 

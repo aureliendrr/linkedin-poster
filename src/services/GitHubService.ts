@@ -1,9 +1,24 @@
 import fetch from 'node-fetch';
+import { Commit, GitHubCommit } from '../types/index.js';
+
+interface GitHubServiceOptions {
+  branch?: string;
+  daysToFetch?: number;
+  excludePatterns?: string[];
+}
 
 export class GitHubService {
-  constructor(owner, repo, options = {}) {
+  private token: string;
+  private owner: string;
+  private repo: string;
+  private baseUrl: string;
+  private branch: string;
+  private daysToFetch: number;
+  private excludePatterns: string[];
+
+  constructor(owner: string, repo: string, options: GitHubServiceOptions = {}) {
     // Get token directly from environment for security
-    this.token = process.env.GH_TOKEN;
+    this.token = process.env.GH_TOKEN || '';
     if (!this.token) {
       throw new Error('GH_TOKEN environment variable is required');
     }
@@ -16,7 +31,7 @@ export class GitHubService {
     this.excludePatterns = options.excludePatterns || [];
   }
 
-  async fetchCommitsSinceLastWeek() {
+  async fetchCommitsSinceLastWeek(): Promise<Commit[]> {
     const since = new Date();
     since.setDate(since.getDate() - this.daysToFetch);
     const sinceIso = since.toISOString();
@@ -34,27 +49,33 @@ export class GitHubService {
       throw new Error(`GitHub API error: ${response.statusText}`);
     }
 
-    const data = await response.json();
-    const commits = data.map(commit => commit.commit.message);
+    const data = await response.json() as GitHubCommit[];
+    const commits: Commit[] = data.map(commit => ({
+      sha: commit.sha,
+      message: commit.commit.message,
+      author: commit.commit.author.name,
+      date: commit.commit.author.date,
+      url: commit.html_url
+    }));
     
     // Filter out commits that match exclude patterns
     return this.filterCommits(commits);
   }
 
-  filterCommits(commits) {
+  private filterCommits(commits: Commit[]): Commit[] {
     if (this.excludePatterns.length === 0) {
       return commits;
     }
 
     return commits.filter(commit => {
-      const commitLower = commit.toLowerCase();
+      const commitLower = commit.message.toLowerCase();
       return !this.excludePatterns.some(pattern => 
         commitLower.includes(pattern.toLowerCase())
       );
     });
   }
 
-  async fetchCommitsByDateRange(startDate, endDate) {
+  async fetchCommitsByDateRange(startDate: Date, endDate: Date): Promise<Commit[]> {
     const startIso = startDate.toISOString();
     const endIso = endDate.toISOString();
 
@@ -71,8 +92,14 @@ export class GitHubService {
       throw new Error(`GitHub API error: ${response.statusText}`);
     }
 
-    const data = await response.json();
-    const commits = data.map(commit => commit.commit.message);
+    const data = await response.json() as GitHubCommit[];
+    const commits: Commit[] = data.map(commit => ({
+      sha: commit.sha,
+      message: commit.commit.message,
+      author: commit.commit.author.name,
+      date: commit.commit.author.date,
+      url: commit.html_url
+    }));
     
     // Filter out commits that match exclude patterns
     return this.filterCommits(commits);

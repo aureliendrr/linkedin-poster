@@ -680,6 +680,14 @@ The script tracks OpenAI usage and estimates costs:
 
 ## Development
 
+### CI/CD
+
+This project uses GitHub Actions to automate testing and publishing. See [docs/CI-CD.md](docs/CI-CD.md) for complete configuration.
+
+**Available workflows:**
+- **Test**: Automatic validation on each PR
+- **Publish**: Automatic npm publishing on main branch pushes
+
 ### Development Mode
 
 For development, you can use the TypeScript source directly without building:

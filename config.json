@@ -1,12 +1,17 @@
 {
   "project": {
-    "name": "Your Project Name",
-    "url": "https://your-project-url.com",
-    "description": "A brief description of your project"
+    "name": "Nuxios",
+    "url": "https://nuxios.com",
+    "description": "Nuxios is a reservation platform for small businesses."
   },
   "output": {
-    "type": "multiple",
-    "options": ["console", "linkedin", "file", "multiple"],
+    "type": "file",
+    "options": [
+      "console",
+      "linkedin",
+      "file",
+      "all"
+    ],
     "console": {
       "enabled": true,
       "format": "detailed"
@@ -25,7 +30,7 @@
   },
   "ai": {
     "model": "gpt-3.5-turbo",
-    "language": "english",
+    "language": "french",
     "tone": "motivational",
     "maxTokens": 1000,
     "temperature": 0.7
@@ -35,6 +40,8 @@
     "daysToFetch": 7,
     "excludePatterns": [
       "refactor",
+      "fix",
+      "bug",
       "chore",
       "docs",
       "test",
@@ -51,8 +58,12 @@
   "post": {
     "maxLength": 3000,
     "includeHashtags": true,
-    "hashtags": ["#tech", "#development", "#innovation"],
+    "hashtags": [
+      "#tech",
+      "#development",
+      "#innovation"
+    ],
     "callToAction": true,
     "includeEmojis": true
   }
-} 
+}

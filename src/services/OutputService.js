@@ -89,10 +89,6 @@ export class OutputService {
         post,
         metadata,
         generatedAt: new Date().toISOString(),
-        config: {
-          project: this.config.getProjectConfig(),
-          ai: this.config.getOpenAIConfig()
-        }
       }, null, 2);
     } else if (fileConfig.format === 'txt') {
       content = `Generated LinkedIn Post\n${'='.repeat(30)}\n\n${post}\n\nGenerated at: ${new Date().toISOString()}`;
@@ -158,7 +154,6 @@ export class OutputService {
       const { LinkedInService } = await import('./LinkedInService.js');
       
       const linkedInService = new LinkedInService(
-        this.config.config.LINKEDIN_ACCESS_TOKEN,
         this.config.config.LINKEDIN_PERSON_ID
       );
 

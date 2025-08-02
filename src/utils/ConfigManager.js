@@ -61,14 +61,11 @@ export class ConfigManager {
 
   loadEnvironmentConfig() {
     const requiredVars = [
-      'GH_TOKEN',
-      'OPENAI_API_KEY',
       'GITHUB_OWNER',
       'GITHUB_REPO'
     ];
 
     const optionalVars = [
-      'LINKEDIN_ACCESS_TOKEN',
       'LINKEDIN_PERSON_ID'
     ];
 
@@ -100,7 +97,7 @@ export class ConfigManager {
   }
 
   hasLinkedInCredentials() {
-    return !!(this.config.LINKEDIN_ACCESS_TOKEN && this.config.LINKEDIN_PERSON_ID);
+    return !!(process.env.LINKEDIN_ACCESS_TOKEN && this.config.LINKEDIN_PERSON_ID);
   }
 
   validateLinkedInConfig() {
@@ -109,9 +106,30 @@ export class ConfigManager {
     }
   }
 
+  validateAllCredentials() {
+    const missingVars = [];
+    
+    if (!process.env.GH_TOKEN) {
+      missingVars.push('GH_TOKEN');
+    }
+    if (!process.env.OPENAI_API_KEY) {
+      missingVars.push('OPENAI_API_KEY');
+    }
+    if (!process.env.GITHUB_OWNER) {
+      missingVars.push('GITHUB_OWNER');
+    }
+    if (!process.env.GITHUB_REPO) {
+      missingVars.push('GITHUB_REPO');
+    }
+    
+    if (missingVars.length > 0) {
+      throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
+    }
+  }
+
   getGitHubConfig() {
     return {
-      token: this.config.GH_TOKEN,
+      // token is intentionally excluded for security - use process.env.GH_TOKEN directly
       owner: this.config.GITHUB_OWNER,
       repo: this.config.GITHUB_REPO,
       branch: this.config.github?.branch || 'main',
@@ -122,9 +140,8 @@ export class ConfigManager {
 
   getOpenAIConfig() {
     return {
-      apiKey: this.config.OPENAI_API_KEY,
       model: this.config.ai?.model || 'gpt-3.5-turbo',
-      language: this.config.ai?.language || 'french',
+      language: this.config.ai?.language || 'english',
       tone: this.config.ai?.tone || 'motivational',
       maxTokens: this.config.ai?.maxTokens || 1000,
       temperature: this.config.ai?.temperature || 0.7
@@ -133,7 +150,7 @@ export class ConfigManager {
 
   getLinkedInConfig() {
     return {
-      accessToken: this.config.LINKEDIN_ACCESS_TOKEN,
+      // accessToken is intentionally excluded for security - use process.env.LINKEDIN_ACCESS_TOKEN directly
       personId: this.config.LINKEDIN_PERSON_ID,
       visibility: this.config.output?.linkedin?.visibility || 'PUBLIC',
       autoPost: this.config.output?.linkedin?.autoPost !== false,

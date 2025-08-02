@@ -2,7 +2,13 @@ import { OpenAI } from 'openai';
 import { TemplateManager } from '../utils/TemplateManager.js';
 
 export class OpenAIService {
-  constructor(apiKey, options = {}) {
+  constructor(options = {}) {
+    // Get API key directly from environment for security
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      throw new Error('OPENAI_API_KEY environment variable is required');
+    }
+    
     this.openai = new OpenAI({ apiKey });
     this.model = options.model || 'gpt-3.5-turbo';
     this.language = options.language || 'english';

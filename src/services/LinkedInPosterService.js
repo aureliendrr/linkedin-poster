@@ -9,6 +9,9 @@ export class LinkedInPosterService {
   constructor(options = {}) {
     this.config = new ConfigManager();
     this.logger = new Logger(options);
+    
+    // Validate all required credentials are present
+    this.config.validateAllCredentials();
 
     // Initialize services
     const githubConfig = this.config.getGitHubConfig();
@@ -16,7 +19,6 @@ export class LinkedInPosterService {
     const linkedInConfig = this.config.getLinkedInConfig();
 
     this.githubService = new GitHubService(
-      githubConfig.token,
       githubConfig.owner,
       githubConfig.repo,
       {
@@ -26,7 +28,7 @@ export class LinkedInPosterService {
       }
     );
 
-    this.openAIService = new OpenAIService(openAIConfig.apiKey, {
+    this.openAIService = new OpenAIService({
       model: openAIConfig.model,
       language: openAIConfig.language,
       tone: openAIConfig.tone,
@@ -35,7 +37,6 @@ export class LinkedInPosterService {
     });
 
     this.linkedInService = new LinkedInService(
-      linkedInConfig.accessToken,
       linkedInConfig.personId
     );
 

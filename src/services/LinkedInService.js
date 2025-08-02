@@ -1,8 +1,13 @@
 import fetch from 'node-fetch';
 
 export class LinkedInService {
-  constructor(accessToken, personId) {
-    this.accessToken = accessToken;
+  constructor(personId) {
+    // Get access token directly from environment for security
+    this.accessToken = process.env.LINKEDIN_ACCESS_TOKEN;
+    if (!this.accessToken) {
+      throw new Error('LINKEDIN_ACCESS_TOKEN environment variable is required');
+    }
+    
     this.personId = personId;
     this.baseUrl = 'https://api.linkedin.com/v2';
   }

@@ -1,8 +1,13 @@
 import fetch from 'node-fetch';
 
 export class GitHubService {
-  constructor(token, owner, repo, options = {}) {
-    this.token = token;
+  constructor(owner, repo, options = {}) {
+    // Get token directly from environment for security
+    this.token = process.env.GH_TOKEN;
+    if (!this.token) {
+      throw new Error('GH_TOKEN environment variable is required');
+    }
+    
     this.owner = owner;
     this.repo = repo;
     this.baseUrl = 'https://api.github.com';

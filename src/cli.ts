@@ -16,6 +16,13 @@ function question(prompt: string): Promise<string> {
   });
 }
 
+function isValidToken(token: string): boolean {
+  // Basic validation: LinkedIn tokens are typically base64-like strings
+  // They should contain only alphanumeric characters, hyphens, and underscores
+  const tokenRegex = /^[A-Za-z0-9\-_]+$/;
+  return tokenRegex.test(token);
+}
+
 async function executeCommand(commandFn: (options: LinkedInPosterOptions) => Promise<void>, options: LinkedInPosterOptions = {}): Promise<void> {
   try {
     await commandFn(options);
@@ -126,8 +133,8 @@ async function handleSetupCommand(): Promise<void> {
   console.log('4. Note your Person ID (it\'s a numeric value)\n');
 
   const personId = await question('Enter your LinkedIn Person ID: ');
-  if (!personId || isNaN(Number(personId))) {
-    console.log('❌ Invalid Person ID. Please enter a numeric value.');
+  if (!personId || isNaN(Number(personId)) || Number(personId) <= 0) {
+    console.log('❌ Invalid Person ID. Please enter a valid positive numeric value.');
     rl.close();
     return;
   }
@@ -139,8 +146,8 @@ async function handleSetupCommand(): Promise<void> {
   console.log('4. The token should have "w_member_social" scope\n');
 
   const accessToken = await question('Enter your LinkedIn Access Token: ');
-  if (!accessToken || accessToken.length < 50) {
-    console.log('❌ Invalid access token. Please check your token.');
+  if (!accessToken || accessToken.length < 50 || !isValidToken(accessToken)) {
+    console.log('❌ Invalid access token. Please check your token format.');
     rl.close();
     return;
   }
@@ -157,6 +164,16 @@ async function handleSetupCommand(): Promise<void> {
       envContent = fs.readFileSync(envPath, 'utf8');
     }
 
+    // Security: Validate that we're not overwriting critical system variables
+    const criticalVars = ['PATH', 'HOME', 'USER', 'SHELL', 'PWD'];
+    const hasCriticalVars = criticalVars.some(varName => 
+      envContent.includes(`${varName}=`)
+    );
+    
+    if (hasCriticalVars) {
+      console.log('⚠️  Warning: .env file contains critical system variables. Please review manually.');
+    }
+
     // Add LinkedIn credentials to .env
     const linkedinVars = `\n# LinkedIn Configuration
 LINKEDIN_ACCESS_TOKEN=${accessToken}
@@ -171,7 +188,16 @@ LINKEDIN_PERSON_ID=${personId}`;
       envContent += linkedinVars;
     }
 
+    // Security: Set restrictive permissions on .env file
     fs.writeFileSync(envPath, envContent);
+    
+    // Set file permissions to owner read/write only (600)
+    try {
+      const { chmod } = await import('fs/promises');
+      await chmod(envPath, 0o600);
+    } catch (chmodError) {
+      console.log('⚠️  Could not set restrictive permissions on .env file');
+    }
 
     console.log('\n✅ LinkedIn setup completed!');
     console.log('Your credentials have been added to your .env file.');

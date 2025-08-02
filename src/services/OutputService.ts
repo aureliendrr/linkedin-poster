@@ -70,14 +70,27 @@ export class OutputService {
       const outputPath = outputConfig.file.path;
       const format = outputConfig.file.format;
 
+      // Security: Validate and sanitize the output path
+      const sanitizedPath = this.sanitizePath(outputPath);
+      if (!sanitizedPath) {
+        return { success: false, message: 'Invalid output path provided' };
+      }
+
       // Ensure directory exists
-      if (!fs.existsSync(outputPath)) {
-        fs.mkdirSync(outputPath, { recursive: true });
+      if (!fs.existsSync(sanitizedPath)) {
+        fs.mkdirSync(sanitizedPath, { recursive: true });
       }
 
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const filename = `post-${timestamp}.${format}`;
-      const filePath = path.join(outputPath, filename);
+      const filePath = path.join(sanitizedPath, filename);
+
+      // Security: Validate the final file path
+      const finalPath = path.resolve(filePath);
+      const basePath = path.resolve(sanitizedPath);
+      if (!finalPath.startsWith(basePath)) {
+        return { success: false, message: 'Path traversal attack detected' };
+      }
 
       let content: string;
       if (format === 'json') {
@@ -90,10 +103,37 @@ export class OutputService {
         content = post;
       }
 
-      fs.writeFileSync(filePath, content, 'utf8');
-      return { success: true, path: filePath };
+      fs.writeFileSync(finalPath, content, 'utf8');
+      return { success: true, path: finalPath };
     } catch (error) {
       return { success: false, message: (error as Error).message };
+    }
+  }
+
+  /**
+   * Sanitize and validate file path to prevent path traversal attacks
+   */
+  private sanitizePath(filePath: string): string | null {
+    try {
+      // Normalize the path
+      const normalizedPath = path.normalize(filePath);
+      
+      // Check for path traversal attempts
+      if (normalizedPath.includes('..') || normalizedPath.includes('~')) {
+        return null;
+      }
+      
+      // Ensure the path is within the current working directory
+      const resolvedPath = path.resolve(normalizedPath);
+      const cwd = process.cwd();
+      
+      if (!resolvedPath.startsWith(cwd)) {
+        return null;
+      }
+      
+      return resolvedPath;
+    } catch (error) {
+      return null;
     }
   }
 } 

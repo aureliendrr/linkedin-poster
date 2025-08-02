@@ -174,11 +174,30 @@ export class ConfigManager {
   }
 
   getProjectConfig(): ProjectConfig {
+    const projectUrl = this.config.project?.url || 'https://github.com';
+    
+    // Security: Validate URL format
+    if (!this.isValidUrl(projectUrl)) {
+      console.warn('⚠️  Invalid project URL format. Using default.');
+    }
+    
     return {
       name: this.config.project?.name || 'My Project',
-      url: this.config.project?.url || 'https://github.com',
+      url: this.isValidUrl(projectUrl) ? projectUrl : 'https://github.com',
       description: this.config.project?.description || 'A software project'
     };
+  }
+
+  /**
+   * Validate URL format to prevent injection attacks
+   */
+  private isValidUrl(url: string): boolean {
+    try {
+      const urlObj = new URL(url);
+      return ['http:', 'https:'].includes(urlObj.protocol);
+    } catch {
+      return false;
+    }
   }
 
   getOutputConfig(): OutputConfig {

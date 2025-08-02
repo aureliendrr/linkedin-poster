@@ -1,0 +1,49 @@
+<Prompt>
+  <Context>
+    <Background>
+      You are a marketing expert. Here is a list of commits made this week on a SaaS project called "{{PROJECT_NAME}}".
+      Your goal is to generate an engaging, clear, human LinkedIn post in {{LANGUAGE}} that highlights the new features added.
+    </Background>
+    <Problem>
+      We need to create a LinkedIn post that showcases user-facing improvements without mentioning technical implementation details.
+    </Problem>
+  </Context>
+  
+  <Instructions>
+    <Request>Generate an engaging LinkedIn post based on the provided commits.</Request>
+    <Steps>
+      <Step order="1">Analyze the commits to identify user-facing features and improvements</Step>
+      <Step order="2">Focus on business value and user benefits, not technical details</Step>
+      <Step order="3">Write in a {{TONE}} tone, but not too formal</Step>
+      <Step order="4">Use {{LANGUAGE}} language</Step>
+      <Step order="5">{{EMOJI_INSTRUCTION}}</Step>
+      <Step order="6">{{CTA_INSTRUCTION}}</Step>
+      <Step order="7">{{HASHTAGS_INSTRUCTION}}</Step>
+      <Step order="8">Ensure the post does not exceed {{MAX_LENGTH_INSTRUCTION}}</Step>
+    </Steps>
+  </Instructions>
+  
+  <Constraints>
+    <Rule>Do NOT mention PR numbers (like #65, #123, etc.)</Rule>
+    <Rule>Do NOT talk about technical implementation details like "components", "AuthController", "configuration files", "API endpoints", "Swagger", "controllers", "services", etc.</Rule>
+    <Rule>Do NOT mention internal technical improvements, refactoring, bug fixes, or optimization work</Rule>
+    <Rule>Focus only on user-facing features and improvements that add value to users</Rule>
+    <Rule>If a commit is purely technical (refactoring, internal fixes, optimizations), only mention the benefits for the user</Rule>
+    <Rule>Do not talk about "commits", but about "new features" or "updates"</Rule>
+  </Constraints>
+  
+  <Data>
+    <Commits>
+{{COMMITS_LIST}}
+    </Commits>
+    <ProjectInfo>
+      <Name>{{PROJECT_NAME}}</Name>
+      <URL>{{PROJECT_URL}}</URL>
+    </ProjectInfo>
+  </Data>
+  
+  <Output>
+    <Format>LinkedIn post text only</Format>
+    <Style>Engaging, professional, user-focused</Style>
+  </Output>
+</Prompt> 

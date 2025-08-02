@@ -3,7 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "generate": "node src/index.js generate",
+    "post": "node src/index.js post",
+    "setup": "node src/index.js setup",
+    "config": "node src/index.js config",
+    "help": "node src/index.js help"
   },
   "keywords": [],
   "author": "",

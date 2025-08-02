@@ -69,7 +69,9 @@ Environment Variables:
 }
 
 async function handleGenerateCommand(options: LinkedInPosterOptions): Promise<void> {
-  const poster = new LinkedInPosterService(options);
+  // CLI is always verbose by default (unless --silent is specified)
+  const cliOptions = { ...options, verbose: !options.silent };
+  const poster = new LinkedInPosterService(cliOptions);
   const result = await poster.generatePost();
   if (!result) {
     process.exit(0);
@@ -77,7 +79,9 @@ async function handleGenerateCommand(options: LinkedInPosterOptions): Promise<vo
 }
 
 async function handlePostCommand(options: LinkedInPosterOptions): Promise<void> {
-  const poster = new LinkedInPosterService(options);
+  // CLI is always verbose by default (unless --silent is specified)
+  const cliOptions = { ...options, verbose: !options.silent };
+  const poster = new LinkedInPosterService(cliOptions);
   
   // Check if LinkedIn is configured
   if (!poster.isLinkedInConfigured()) {

@@ -114,16 +114,16 @@ For simple use cases, you can use the utility functions:
 
 ```typescript
 import { 
-  generatePost,           // Generate post from commits
-  generateAndPost,        // Generate and post to LinkedIn
+  generatePost,           // Generate post from commits (no logs)
+  generateAndPost,        // Generate and post to LinkedIn (no logs)
   isLinkedInConfigured,   // Check LinkedIn configuration
   createPoster           // Create custom poster instance
 } from 'linkedin-poster';
 
-// Quick post generation
+// Quick post generation (no console output)
 const result = await generatePost();
 
-// Quick post and publish
+// Quick post and publish (no console output)
 const posted = await generateAndPost({ autoPost: true });
 
 // Check configuration
@@ -131,8 +131,36 @@ if (isLinkedInConfigured()) {
   // Ready to post
 }
 
-// Create custom instance
+// Create custom instance with logging if needed
 const poster = createPoster({ verbose: true });
+```
+
+### API vs CLI Behavior
+
+**API Usage (Library):**
+- **No console logs by default** - Perfect for integration
+- You control all output in your application
+- Clean, silent operation
+
+**CLI Usage:**
+- **Verbose logging by default** - Shows progress and details
+- Use `--silent` flag to disable logs
+- Interactive experience with user feedback
+
+```typescript
+// API usage - no logs, you control output
+import { generatePost } from 'linkedin-poster';
+
+const result = await generatePost(); // Silent operation
+if (result) {
+  console.log('My custom output:', result.post);
+}
+```
+
+```bash
+# CLI usage - verbose by default
+linkedin-poster generate  # Shows progress, stats, etc.
+linkedin-poster generate --silent  # Silent mode
 ```
 
 ### As a CLI Tool

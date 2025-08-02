@@ -37,12 +37,13 @@ export type {
 import { LinkedInPosterService } from './services/LinkedInPosterService.js';
 import type { PostOptions, PostGenerationResult, OutputResult, LinkedInPosterOptions } from './types/index.js';
 
-// Create a singleton instance for simple usage
+// Create a singleton instance for simple usage (always silent for API)
 let defaultPoster: LinkedInPosterService | null = null;
 
-function getDefaultPoster(options?: LinkedInPosterOptions): LinkedInPosterService {
+function getDefaultPoster(): LinkedInPosterService {
   if (!defaultPoster) {
-    defaultPoster = new LinkedInPosterService(options);
+    // API usage is always silent by default
+    defaultPoster = new LinkedInPosterService({ silent: true });
   }
   return defaultPoster;
 }
@@ -81,7 +82,7 @@ export function isLinkedInConfigured(): boolean {
 }
 
 /**
- * Create a new poster instance with custom options
+ * Create a new poster instance with custom options (for advanced usage)
  * @param options - LinkedInPosterService options
  * @returns New LinkedInPosterService instance
  */

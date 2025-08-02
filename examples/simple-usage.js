@@ -1,4 +1,4 @@
-// Example: Simple usage of linkedin-poster library
+// Example: Simple usage of linkedin-poster library (no logs by default)
 import { generatePost, generateAndPost, isLinkedInConfigured } from 'linkedin-poster';
 
 async function main() {
@@ -12,7 +12,7 @@ async function main() {
       console.log('⚠️  LinkedIn is not configured. Only generating posts.');
     }
 
-    // Simple post generation
+    // Generate post silently (API doesn't log by default)
     console.log('\n📝 Generating post from recent commits...');
     const result = await generatePost();
 
@@ -26,7 +26,7 @@ async function main() {
       console.log(result.post);
       console.log('─'.repeat(50));
 
-      // If LinkedIn is configured, post automatically
+      // Post to LinkedIn silently
       if (isLinkedInConfigured()) {
         console.log('\n📤 Posting to LinkedIn...');
         const postResult = await generateAndPost({

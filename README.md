@@ -13,6 +13,151 @@ Automatically generate and post LinkedIn updates based on your GitHub commits us
 - 🔧 Easy to extend and customize
 - 📝 Written in TypeScript with full type safety
 
+## Installation
+
+### As a Library
+
+```bash
+npm install linkedin-poster
+```
+
+### As a CLI Tool
+
+```bash
+npm install -g linkedin-poster
+```
+
+## Usage
+
+### As a Library
+
+```typescript
+import { LinkedInPosterService } from 'linkedin-poster';
+
+// Create a poster instance
+const poster = new LinkedInPosterService({
+  verbose: true
+});
+
+// Generate a post from recent commits
+const result = await poster.generatePost();
+
+// Generate and post to LinkedIn
+const postedResult = await poster.generateAndPost({
+  autoPost: true,
+  visibility: 'PUBLIC'
+});
+
+// Check if LinkedIn is configured
+if (poster.isLinkedInConfigured()) {
+  console.log('LinkedIn is ready for posting');
+}
+```
+
+### Advanced Library Usage
+
+```typescript
+import { 
+  LinkedInPosterService, 
+  GitHubService, 
+  OpenAIService,
+  LinkedInService,
+  ConfigManager 
+} from 'linkedin-poster';
+
+// Use individual services
+const githubService = new GitHubService();
+const openAIService = new OpenAIService();
+const linkedInService = new LinkedInService();
+const configManager = new ConfigManager();
+
+// Fetch commits manually
+const commits = await githubService.getRecentCommits(7);
+
+// Generate post with custom options
+const post = await openAIService.generatePost({
+  commits,
+  projectName: 'My Awesome Project',
+  language: 'english',
+  tone: 'professional'
+});
+
+// Post to LinkedIn
+const result = await linkedInService.postToLinkedIn(post);
+```
+
+### As a CLI Tool
+
+```bash
+# Generate a post (no posting)
+linkedin-poster generate
+
+# Generate and post to LinkedIn
+linkedin-poster post
+
+# Post with private visibility
+linkedin-poster post --private
+
+# Setup LinkedIn API
+linkedin-poster setup
+
+# Create configuration file
+linkedin-poster config
+
+# Show help
+linkedin-poster help
+```
+
+## API Reference
+
+### LinkedInPosterService
+
+The main service class that orchestrates all functionality.
+
+#### Constructor
+
+```typescript
+new LinkedInPosterService(options?: LinkedInPosterOptions)
+```
+
+**Options:**
+- `verbose?: boolean` - Enable verbose logging
+- `silent?: boolean` - Disable all output
+
+#### Methods
+
+- `generatePost(): Promise<PostGenerationResult | null>` - Generate a post from recent commits
+- `generateAndPost(options?: PostOptions): Promise<OutputResult | null>` - Generate and post to LinkedIn
+- `isLinkedInConfigured(): boolean` - Check if LinkedIn credentials are configured
+
+### Types
+
+```typescript
+interface LinkedInPosterOptions {
+  verbose?: boolean;
+  silent?: boolean;
+}
+
+interface PostOptions {
+  autoPost?: boolean;
+  requireConfirmation?: boolean;
+  visibility?: 'PUBLIC' | 'CONNECTIONS';
+}
+
+interface PostGenerationResult {
+  post: string;
+  totalTokens: number;
+  estimatedCost: number;
+  model: string;
+}
+
+interface OutputResult {
+  console?: { success: boolean; message?: string; };
+  file?: { success: boolean; path?: string; message?: string; };
+  linkedin?: { success: boolean; postId?: string; message?: string; };
+}
+```
+
 ## Setup
 
 ### 1. Install Dependencies

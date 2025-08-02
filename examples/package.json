@@ -1,0 +1,20 @@
+{
+  "name": "linkedin-poster-examples",
+  "version": "1.0.0",
+  "description": "Examples for using linkedin-poster library",
+  "type": "module",
+  "scripts": {
+    "basic": "node library-usage.js",
+    "advanced": "node advanced-usage.js"
+  },
+  "dependencies": {
+    "linkedin-poster": "file:../"
+  },
+  "keywords": [
+    "linkedin-poster",
+    "examples",
+    "library"
+  ],
+  "author": "",
+  "license": "ISC"
+} 

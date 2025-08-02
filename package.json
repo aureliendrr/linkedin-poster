@@ -1,28 +1,69 @@
 {
   "name": "linkedin-poster",
   "version": "1.0.0",
+  "description": "AI-powered LinkedIn post generator library",
   "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./cli": {
+      "import": "./dist/cli.js",
+      "types": "./dist/cli.d.ts"
+    }
+  },
   "type": "module",
+  "bin": {
+    "linkedin-poster": "./dist/cli.js"
+  },
+  "files": [
+    "dist/**/*",
+    "templates/**/*",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "tsx src/index.ts",
-    "dev:generate": "tsx src/index.ts generate",
-    "dev:post": "tsx src/index.ts post",
-    "dev:setup": "tsx src/index.ts setup",
-    "dev:config": "tsx src/index.ts config",
-    "dev:help": "tsx src/index.ts help",
+    "build:lib": "tsc --project tsconfig.lib.json",
+    "build:cli": "tsc --project tsconfig.cli.json",
+    "build:all": "npm run build:lib && npm run build:cli",
+    "start": "node dist/cli.js",
+    "dev": "tsx src/cli.ts",
+    "dev:generate": "tsx src/cli.ts generate",
+    "dev:post": "tsx src/cli.ts post",
+    "dev:setup": "tsx src/cli.ts setup",
+    "dev:config": "tsx src/cli.ts config",
+    "dev:help": "tsx src/cli.ts help",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "generate": "npm run build && node dist/index.js generate",
-    "post": "npm run build && node dist/index.js post",
-    "setup": "npm run build && node dist/index.js setup",
-    "config": "npm run build && node dist/index.js config",
-    "help": "npm run build && node dist/index.js help"
+    "generate": "npm run build:all && node dist/cli.js generate",
+    "post": "npm run build:all && node dist/cli.js post",
+    "setup": "npm run build:all && node dist/cli.js setup",
+    "config": "npm run build:all && node dist/cli.js config",
+    "help": "npm run build:all && node dist/cli.js help",
+    "prepublishOnly": "npm run build:all"
   },
-  "keywords": [],
+  "keywords": [
+    "linkedin",
+    "post",
+    "ai",
+    "openai",
+    "github",
+    "automation",
+    "social-media",
+    "typescript"
+  ],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/linkedin-poster.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/linkedin-poster/issues"
+  },
+  "homepage": "https://github.com/yourusername/linkedin-poster#readme",
   "dependencies": {
     "dotenv": "^17.2.1",
     "node-fetch": "^3.3.2",
@@ -32,5 +73,9 @@
     "@types/node": "^20.0.0",
     "tsx": "^4.0.0",
     "typescript": "^5.0.0"
+  },
+  "peerDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

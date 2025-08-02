@@ -685,8 +685,8 @@ The script tracks OpenAI usage and estimates costs:
 This project uses GitHub Actions to automate testing and publishing. See [docs/CI-CD.md](docs/CI-CD.md) for complete configuration.
 
 **Available workflows:**
-- **Test**: Automatic validation on each PR
-- **Publish**: Automatic npm publishing on main branch pushes
+- **Test**: Automatic validation on each PR and push
+- **Publish**: Automatic npm publishing on main branch pushes (only if tests pass)
 
 ### Development Mode
 
